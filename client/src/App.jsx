@@ -1,40 +1,50 @@
 import { useState } from 'react';
-const BACKEND_URL = 'https://your-backend-host-url.com'; // replace with actual backend
+
+const BACKEND_URL = 'https://faf8f975-dc9c-4748-97a9-a1a3b7f7d972-00-ry5sa16bzjdi.janeway.replit.dev';
 
 function App() {
   const [inputPrompt, setInputPrompt] = useState('');
   const [refinedPrompt, setRefinedPrompt] = useState('');
   const [finalCode, setFinalCode] = useState('');
   const [loading, setLoading] = useState(false);
-  const [refinePasses, setRefinePasses] = useState(3);
 
   const handleRefine = async () => {
     setLoading(true);
-    const response = await fetch(`${BACKEND_URL}/refine`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ prompt: inputPrompt }),
-    });
-    const data = await response.json();
-    setRefinedPrompt(data.refinedPrompt);
-    setLoading(false);
+    try {
+      const response = await fetch(`${BACKEND_URL}/refine`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt: inputPrompt }),
+      });
+      const data = await response.json();
+      setRefinedPrompt(data.refinedPrompt);
+    } catch (error) {
+      console.error('Error refining prompt:', error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleGenerate = async () => {
     setLoading(true);
-    const response = await fetch(`${BACKEND_URL}/generate`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ prompt: refinedPrompt, passes: refinePasses }),
-    });
-    const data = await response.json();
-    setFinalCode(data.code);
-    setLoading(false);
+    try {
+      const response = await fetch(`${BACKEND_URL}/generate`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt: refinedPrompt }),
+      });
+      const data = await response.json();
+      setFinalCode(data.code);
+    } catch (error) {
+      console.error('Error generating code:', error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <div className="app">
-      <h1>🤖 AI Code Refiner</h1>
+      <h1>🤖 AI Ricochet</h1>
       <textarea
         placeholder="Type your rough prompt..."
         value={inputPrompt}
@@ -43,26 +53,22 @@ function App() {
         cols={60}
       />
       <br />
-      <input
-        type="number"
-        min="1"
-        max="10"
-        value={refinePasses}
-        onChange={(e) => setRefinePasses(parseInt(e.target.value) || 1)}
-        style={{ width: '60px', marginRight: '1rem' }}
-      />
-      <label>Refinement Passes</label>
-      <br />
-      <button onClick={handleRefine}>Refine Prompt</button>
+      <button onClick={handleRefine} disabled={loading || !inputPrompt.trim()}>
+        Refine Prompt
+      </button>
 
       {refinedPrompt && (
         <>
           <h3>✨ Refined Prompt</h3>
           <pre>{refinedPrompt}</pre>
-          <button onClick={handleGenerate}>Generate & Refine Code</button>
+          <button onClick={handleGenerate} disabled={loading || !refinedPrompt.trim()}>
+            Generate & Refine Code
+          </button>
         </>
       )}
+
       {loading && <p>⏳ Working with multiple AIs...</p>}
+
       {finalCode && (
         <>
           <h3>✅ Final Refined Code</h3>
