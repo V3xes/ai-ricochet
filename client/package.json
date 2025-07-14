@@ -1,5 +1,5 @@
 {
-  "name": "ai-code-refiner",
+  "name": "ai-ricochet",
   "version": "1.0.0",
   "private": true,
   "scripts": {
@@ -9,7 +9,7 @@
     "predeploy": "npm run build",
     "deploy": "gh-pages -d dist"
   },
-  "homepage": "https://v3xes.github.io/ai-ricochet.github.io/"
+  "homepage": "https://v3xes.github.io/ai-ricochet.github.io/",
   "dependencies": {
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
